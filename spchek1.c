@@ -73,20 +73,36 @@ void process_file(char* filename, char** dictionary, int dict_size) {
     int start_column = 1;
 
     while (read(fd, &buffer, 1) > 0) {
-        // Handle newline characters
         if (buffer == '\n') {
             line_number++;
             column_number = 1;
             continue;
         }
 
-        // Handle word separation
         if (isspace(buffer) || ispunct(buffer)) {
-            if (word_index > 0) { // We have a complete word
+            if (word_index > 0) {
                 word[word_index] = '\0'; // Null-terminate the word
-                
-                // Process the word (excluding hyphens for simplicity)
-                if (!find(dictionary, dict_size, word)) {
+
+                char wordInitialCap[MAX_WORD_LENGTH];
+                char wordAllCaps[MAX_WORD_LENGTH];
+                strcpy(wordInitialCap, word);
+                strcpy(wordAllCaps, word);
+
+                // Convert to initial capital
+                wordInitialCap[0] = toupper(wordInitialCap[0]);
+                for (int i = 1; wordInitialCap[i]; i++) {
+                    wordInitialCap[i] = tolower(wordInitialCap[i]);
+                }
+
+                // Convert to all caps
+                for (int i = 0; wordAllCaps[i]; i++) {
+                    wordAllCaps[i] = toupper(wordAllCaps[i]);
+                }
+
+                // Check if the word or its variations are in the dictionary
+                if (!find(dictionary, dict_size, word) &&
+                    !find(dictionary, dict_size, wordInitialCap) &&
+                    !find(dictionary, dict_size, wordAllCaps)) {
                     printf("%s (%d,%d): %s\n", filename, line_number, start_column, word);
                 }
 
@@ -94,36 +110,52 @@ void process_file(char* filename, char** dictionary, int dict_size) {
                 memset(word, 0, MAX_WORD_LENGTH); // Clear the word buffer
             }
 
-            // Update column number for spaces, ignore for punctuation
             if (!ispunct(buffer)) {
                 column_number++;
             }
 
             start_column = column_number;
         } else {
-            // Accumulate characters into word
             if (word_index < MAX_WORD_LENGTH - 1) {
                 word[word_index++] = buffer;
             }
         }
-        
-        // Update column numbers for characters
+
         if (!isspace(buffer) && !ispunct(buffer)) {
             column_number++;
         }
     }
 
-    // Handle last word in file, if any
     if (word_index > 0) {
         word[word_index] = '\0'; // Null-terminate the word
-        if (!find(dictionary, dict_size, word)) {
+
+        // Repeat the capitalization variation check for the last word
+        char wordInitialCap[MAX_WORD_LENGTH];
+        char wordAllCaps[MAX_WORD_LENGTH];
+        strcpy(wordInitialCap, word);
+        strcpy(wordAllCaps, word);
+
+        // Convert to initial capital
+        wordInitialCap[0] = toupper(wordInitialCap[0]);
+        for (int i = 1; wordInitialCap[i]; i++) {
+            wordInitialCap[i] = tolower(wordInitialCap[i]);
+        }
+
+        // Convert to all caps
+        for (int i = 0; wordAllCaps[i]; i++) {
+            wordAllCaps[i] = toupper(wordAllCaps[i]);
+        }
+
+        // Check if the word or its variations are in the dictionary
+        if (!find(dictionary, dict_size, word) &&
+            !find(dictionary, dict_size, wordInitialCap) &&
+            !find(dictionary, dict_size, wordAllCaps)) {
             printf("%s (%d,%d): %s\n", filename, line_number, start_column, word);
         }
     }
 
     close(fd);
 }
-
 
 // Function to process a directory
 void process_directory(char* dirname, char** dictionary, int dict_size) {
