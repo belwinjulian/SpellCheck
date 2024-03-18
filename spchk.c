@@ -5,32 +5,49 @@
 #include <limits.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <fcntl.h> // For open
+#include <unistd.h> // For read, close
 #include <ctype.h>
 #define MAX_WORD_LENGTH 100
-#define MAX_WORDS 105000
+#define MAX_WORDS 150000
 
 // Function to compare two strings for qsort and bsearch
 int cmp(const void* a, const void* b) {
     return strcmp(*(const char**)a, *(const char**)b);
 }
 
-// Function to load the dictionary into an array
+// Modified load_dictionary function to use read
 char** load_dictionary(char* dict_path, int* dict_size) {
     char** dictionary = malloc(MAX_WORDS * sizeof(char*));
-    FILE* file = fopen(dict_path, "r");
-    if (file == NULL) {
+    int fd = open(dict_path, O_RDONLY);
+    if (fd == -1) {
         printf("Could not open dictionary file %s\n", dict_path);
         exit(EXIT_FAILURE);
     }
 
+    char buffer;
     char word[MAX_WORD_LENGTH];
-    while (fscanf(file, "%s", word) != EOF && *dict_size < MAX_WORDS) {
-        dictionary[*dict_size] = malloc(strlen(word) + 1);
-        strcpy(dictionary[*dict_size], word);
-        (*dict_size)++;
+    int word_index = 0;
+    memset(word, 0, MAX_WORD_LENGTH);
+
+    while (read(fd, &buffer, 1) > 0 && *dict_size < MAX_WORDS) {
+        if (buffer == '\n' || buffer == ' ') {
+            if (word_index > 0) {
+                word[word_index] = '\0'; // Null-terminate the word
+                dictionary[*dict_size] = malloc(strlen(word) + 1);
+                strcpy(dictionary[*dict_size], word);
+                (*dict_size)++;
+                word_index = 0;
+                memset(word, 0, MAX_WORD_LENGTH);
+            }
+        } else {
+            if (word_index < MAX_WORD_LENGTH - 1) {
+                word[word_index++] = buffer;
+            }
+        }
     }
 
-    fclose(file);
+    close(fd);
     return dictionary;
 }
 
@@ -39,50 +56,72 @@ int find(char** dictionary, int dict_size, char* word) {
     return bsearch(&word, dictionary, dict_size, sizeof(char*), cmp) != NULL;
 }
 
-// Function to process a file
 void process_file(char* filename, char** dictionary, int dict_size) {
-    FILE* file = fopen(filename, "r");
-    if (file == NULL) {
+    int fd = open(filename, O_RDONLY);
+    if (fd == -1) {
         printf("Could not open file %s\n", filename);
         return;
     }
 
+    char buffer;
     char word[MAX_WORD_LENGTH];
-    int line_number = 1; // Initialize line number
-    int column_number = 1; // Initialize column number
+    int word_index = 0;
+    memset(word, 0, MAX_WORD_LENGTH);
 
+    int line_number = 1;
+    int column_number = 1;
+    int start_column = 1;
 
-    while (fscanf(file, "%s", word) != EOF) {
-        // Remove trailing punctuation
-        int len = strlen(word);
-        while (len > 0 && ispunct(word[len - 1])) {
-            word[len - 1] = '\0';
-            len--;
+    while (read(fd, &buffer, 1) > 0) {
+        if (buffer == '\n') {
+            line_number++;
+            column_number = 1;
+            continue;
         }
 
-        // Ignore quotation marks and brackets at the start
-        while (len > 0 && (word[0] == '\'' || word[0] == '"' || word[0] == '(' || word[0] == '[' || word[0] == '{')) {
-            memmove(word, word + 1, len);
-            len--;
-        }
+        if (isspace(buffer) || ispunct(buffer)) {
+            if (word_index > 0) { 
+                word[word_index] = '\0'; 
 
-        // Handle hyphenated words
-        char* token = strtok(word, "-");
-        while (token != NULL) {
-            if (!find(dictionary, dict_size, token)) {
-                printf("%s (%d,%d): %s\n", filename, line_number, column_number, token);
+                // Convert word to lowercase
+                for (int i = 0; i < word_index; i++) {
+                    word[i] = tolower(word[i]);
+                }
+
+                if (!find(dictionary, dict_size, word)) {
+                    printf("%s (%d,%d): %s\n", filename, line_number, start_column, word);
+                }
+
+                word_index = 0; 
+                memset(word, 0, MAX_WORD_LENGTH); 
             }
-            token = strtok(NULL, "-");
-            column_number += strlen(word) + 1; // Update column number
 
+            if (!ispunct(buffer)) {
+                column_number++;
+            }
+
+            start_column = column_number;
+        } else {
+            if (word_index < MAX_WORD_LENGTH - 1) {
+                word[word_index++] = buffer;
+            }
         }
-
-        line_number++; // Move to the next line
+        
+        if (!isspace(buffer) && !ispunct(buffer)) {
+            column_number++;
+        }
     }
 
-    fclose(file);
-}
+    // Handle last word in file, if any
+    if (word_index > 0) {
+        word[word_index] = '\0'; 
+        if (!find(dictionary, dict_size, word)) {
+            printf("%s (%d,%d): %s\n", filename, line_number, start_column, word);
+        }
+    }
 
+    close(fd);
+}
 
 
 // Function to process a directory
@@ -144,4 +183,3 @@ int main(int argc, char** argv) {
 
     return 0;
 }
-
