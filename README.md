@@ -1,24 +1,24 @@
 # SpellCheck
-This spell checker is a command-line utility designed to verify the spelling of words in text files against a given dictionary. It supports processing individual files as well as all files within specified directories, including nested directories. The program prints the location (filename, line, and column) and the incorrect word for each spelling mistake found.
+This command-line spell checker helps ensure the accuracy of your text files by cross-referencing them with a word dictionary. It can process single files or scan entire directories (including subdirectories). When it finds a misspelling, it reports the file, line number, column number, and the incorrect word.
 
 # Features
-- Checks the spelling of words in text files against a provided dictionary. <br>
-- Processes single files or entire directories recursively.  <br>
-- Displays the filename, line number, column number, and the misspelled word.  <br>
+- **Verifies spelling against a dictionary**: Ensures the accuracy of your text by comparing words against a provided word list. <br>
+- **Flexible processing**: Can handle individual files or recursively scan entire directory structures (including subdirectories) for comprehensive spell-checking.  <br>
+- **Detailed error reporting**: Pinpoints misspellings by providing the filename, line number, column number, and the incorrect word, simplifying the editing process.  <br>
 
 # Dependencies
-- GCC (GNU Compiler Collection) or any compatible C compiler  <br>
-- Standard C libraries (stdio.h, stdlib.h, string.h, limits.h, dirent.h, sys/stat.h, fcntl.h, unistd.h, ctype.h)  <br>
+- GCC (GNU Compiler Collection) or any other C compiler which is compatible  <br>
+- Standard C libraries, which include, stdio.h, stdlib.h, string.h, limits.h, dirent.h, sys/stat.h, fcntl.h, unistd.h, ctype.h  <br>
 
 # Compilation
- - To compile the spell checker, use the following command in the terminal:  <br>
+ - To compile the spell checker, use the command as follows:  <br>
 **gcc -o spellchecker spellchecker.c**
 
 # Usage
-After compiling the program, run it using the following syntax:  <br>
+After compiling the program, run it using the syntax as follow:  <br>
 **./spellchecker <dictionary_path> <file_or_directory_path>...**  <br> <br>
-<dictionary_path>: Path to the text file containing the dictionary words, one per line.  <br>
-<file_or_directory_path>: Path to a text file or directory to check. Multiple paths can be specified.  <br>
+<dictionary_path>:  Specifies the location of the text file containing your word list (one word per line). This file is the reference for correct spellings.  <br>
+<file_or_directory_path>: Indicates the text file or the directory you want to spell-check. The program can handle multiple paths for broader analysis.  <br>
 
 # Program Structure
 ### cmp
