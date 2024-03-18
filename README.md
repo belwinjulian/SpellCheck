@@ -1,7 +1,7 @@
 # SpellCheck
 This spell checker is a command-line utility designed to verify the spelling of words in text files against a given dictionary. It supports processing individual files as well as all files within specified directories, including nested directories. The program prints the location (filename, line, and column) and the incorrect word for each spelling mistake found.
 
-Features
+# Features
 Checks the spelling of words in text files against a provided dictionary.
 Processes single files or entire directories recursively.
 Displays the filename, line number, column number, and the misspelled word.
@@ -10,17 +10,10 @@ GCC (GNU Compiler Collection) or any compatible C compiler
 Standard C libraries (stdio.h, stdlib.h, string.h, limits.h, dirent.h, sys/stat.h, fcntl.h, unistd.h, ctype.h)
 Compilation
 To compile the spell checker, use the following command in the terminal:
-
-sh
-Copy code
 gcc -o spellchecker spellchecker.c
-Replace spellchecker.c with the actual filename if different.
 
-Usage
+# Usage
 After compiling the program, run it using the following syntax:
-
-sh
-Copy code
 ./spellchecker <dictionary_path> <file_or_directory_path>...
 <dictionary_path>: Path to the text file containing the dictionary words, one per line.
 <file_or_directory_path>: Path to a text file or directory to check. Multiple paths can be specified.
@@ -32,4 +25,5 @@ process_file: Processes a single file, checks each word against the dictionary, 
 process_directory: Recursively processes all files in a given directory and its subdirectories.
 main: Entry point of the program. Parses command-line arguments, loads the dictionary, and processes specified files or directories.
 Note
-This program does not dynamically allocate memory for each word in the dictionary or the text files. It uses fixed-size buffers, which means extremely long words may not be processed correctly. Adjust MAX_WORD_LENGTH and MAX_WORDS as needed for your specific use case.
+
+This program does not dynamically allocate memory for each word in the dictionary or the text files. It uses fixed-size buffers, which means extremely long words may not be processed correctly.
