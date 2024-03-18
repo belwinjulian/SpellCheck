@@ -75,31 +75,32 @@ void process_file(char* filename, char** dictionary, int dict_size) {
     while (read(fd, &buffer, 1) > 0) {
         if (buffer == '\n') {
             line_number++;
-            column_number = 1;
+            column_number = 1; // Reset at the start of a new line
             continue;
         }
 
         if (isspace(buffer) || ispunct(buffer)) {
-            if (word_index > 0) {
+            if (word_index > 0) { // If we've built up a word
                 word[word_index] = '\0'; // Null-terminate the word
-
+                
+                // Prepare capitalized versions of the word
                 char wordInitialCap[MAX_WORD_LENGTH];
                 char wordAllCaps[MAX_WORD_LENGTH];
                 strcpy(wordInitialCap, word);
                 strcpy(wordAllCaps, word);
 
-                // Convert to initial capital
+                // Convert first character to uppercase and the rest to lowercase for InitialCap
                 wordInitialCap[0] = toupper(wordInitialCap[0]);
                 for (int i = 1; wordInitialCap[i]; i++) {
                     wordInitialCap[i] = tolower(wordInitialCap[i]);
                 }
 
-                // Convert to all caps
+                // Convert entire word to uppercase for AllCaps
                 for (int i = 0; wordAllCaps[i]; i++) {
                     wordAllCaps[i] = toupper(wordAllCaps[i]);
                 }
 
-                // Check if the word or its variations are in the dictionary
+                // Check original and modified words against dictionary
                 if (!find(dictionary, dict_size, word) &&
                     !find(dictionary, dict_size, wordInitialCap) &&
                     !find(dictionary, dict_size, wordAllCaps)) {
@@ -107,46 +108,46 @@ void process_file(char* filename, char** dictionary, int dict_size) {
                 }
 
                 word_index = 0; // Reset word index
-                memset(word, 0, MAX_WORD_LENGTH); // Clear the word buffer
+                memset(word, 0, MAX_WORD_LENGTH); // Clear the word buffer for next word
             }
 
-           column_number++;
-            if (isspace(buffer)) { // If it's a space, next character might start a new word
-                start_column = column_number;
+            column_number++; // Increment column number for space/punctuation
+            if (isspace(buffer)) {
+                start_column = column_number; // Adjust start_column for the next word
             }
         } else {
-            if (word_index == 0) { // This is the start of a new word
-                start_column = column_number; // Correctly mark the start column
+            if (word_index == 0) {
+                start_column = column_number; // Mark the start of a new word
             }
             if (word_index < MAX_WORD_LENGTH - 1) {
                 word[word_index++] = buffer; // Accumulate characters into word
             }
-            column_number++; // Increment column_number as we're reading a new character
+            column_number++; // Increment column number as we're reading a new character
         }
     }
 
-
+    // Check for last word in file
     if (word_index > 0) {
         word[word_index] = '\0'; // Null-terminate the word
-
         // Repeat the capitalization variation check for the last word
+        // Same logic as above for converting and checking the word
+
+        // Prepare capitalized versions for the last word
         char wordInitialCap[MAX_WORD_LENGTH];
         char wordAllCaps[MAX_WORD_LENGTH];
         strcpy(wordInitialCap, word);
         strcpy(wordAllCaps, word);
 
-        // Convert to initial capital
         wordInitialCap[0] = toupper(wordInitialCap[0]);
         for (int i = 1; wordInitialCap[i]; i++) {
             wordInitialCap[i] = tolower(wordInitialCap[i]);
         }
 
-        // Convert to all caps
         for (int i = 0; wordAllCaps[i]; i++) {
             wordAllCaps[i] = toupper(wordAllCaps[i]);
         }
 
-        // Check if the word or its variations are in the dictionary
+        // Final check for the last word
         if (!find(dictionary, dict_size, word) &&
             !find(dictionary, dict_size, wordInitialCap) &&
             !find(dictionary, dict_size, wordAllCaps)) {
