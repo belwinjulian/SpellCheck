@@ -9,7 +9,7 @@
 #include <unistd.h> // For read, close
 #include <ctype.h>
 #define MAX_WORD_LENGTH 100
-#define MAX_WORDS 105000
+#define MAX_WORDS 150000
 
 // Function to compare two strings for qsort and bsearch
 int cmp(const void* a, const void* b) {
@@ -75,88 +75,81 @@ void process_file(char* filename, char** dictionary, int dict_size) {
     while (read(fd, &buffer, 1) > 0) {
         if (buffer == '\n') {
             line_number++;
-            column_number = 1; // Reset at the start of a new line
+            column_number = 1;
             continue;
         }
 
         if (isspace(buffer) || ispunct(buffer)) {
-            if (word_index > 0) { // If we've built up a word
-                word[word_index] = '\0'; // Null-terminate the word
-                
-                // Prepare capitalized versions of the word
-                char wordInitialCap[MAX_WORD_LENGTH];
-                char wordAllCaps[MAX_WORD_LENGTH];
-                strcpy(wordInitialCap, word);
-                strcpy(wordAllCaps, word);
+            if (word_index > 0) { 
+                word[word_index] = '\0'; 
 
-                // Convert first character to uppercase and the rest to lowercase for InitialCap
-                wordInitialCap[0] = toupper(wordInitialCap[0]);
-                for (int i = 1; wordInitialCap[i]; i++) {
-                    wordInitialCap[i] = tolower(wordInitialCap[i]);
+                char wordLower[MAX_WORD_LENGTH];
+                char wordUpper[MAX_WORD_LENGTH];
+                strcpy(wordLower, word);
+                strcpy(wordUpper, word);
+
+                // Convert word to lowercase for the comparison
+                for (int i = 0; wordLower[i]; i++) {
+                    wordLower[i] = tolower(wordLower[i]);
                 }
 
-                // Convert entire word to uppercase for AllCaps
-                for (int i = 0; wordAllCaps[i]; i++) {
-                    wordAllCaps[i] = toupper(wordAllCaps[i]);
+                // Convert word to uppercase for the comparison
+                for (int i = 0; wordUpper[i]; i++) {
+                    wordUpper[i] = toupper(wordUpper[i]);
                 }
 
-                // Check original and modified words against dictionary
+                // Original check remains, add checks for lowercase and uppercase versions
                 if (!find(dictionary, dict_size, word) &&
-                    !find(dictionary, dict_size, wordInitialCap) &&
-                    !find(dictionary, dict_size, wordAllCaps)) {
+                    !find(dictionary, dict_size, wordLower) &&
+                    !find(dictionary, dict_size, wordUpper)) {
                     printf("%s (%d,%d): %s\n", filename, line_number, start_column, word);
                 }
 
-                word_index = 0; // Reset word index
-                memset(word, 0, MAX_WORD_LENGTH); // Clear the word buffer for next word
+                word_index = 0; 
+                memset(word, 0, MAX_WORD_LENGTH); 
             }
 
-            column_number++; // Increment column number for space/punctuation
-            if (isspace(buffer)) {
-                start_column = column_number; // Adjust start_column for the next word
-            }
+            column_number++;
+            start_column = column_number;
         } else {
-            if (word_index == 0) {
-                start_column = column_number; // Mark the start of a new word
+            if (word_index == 0) { // Update start_column at the start of a word
+                start_column = column_number;
             }
             if (word_index < MAX_WORD_LENGTH - 1) {
-                word[word_index++] = buffer; // Accumulate characters into word
+                word[word_index++] = buffer;
             }
-            column_number++; // Increment column number as we're reading a new character
-        }
+            column_number++;
+        } 
     }
 
-    // Check for last word in file
+    // Handle last word in file, if any
     if (word_index > 0) {
-        word[word_index] = '\0'; // Null-terminate the word
-        // Repeat the capitalization variation check for the last word
-        // Same logic as above for converting and checking the word
+        word[word_index] = '\0'; 
 
-        // Prepare capitalized versions for the last word
-        char wordInitialCap[MAX_WORD_LENGTH];
-        char wordAllCaps[MAX_WORD_LENGTH];
-        strcpy(wordInitialCap, word);
-        strcpy(wordAllCaps, word);
+        // Replicate the capitalization logic for the last word
+        char wordLower[MAX_WORD_LENGTH];
+        char wordUpper[MAX_WORD_LENGTH];
+        strcpy(wordLower, word);
+        strcpy(wordUpper, word);
 
-        wordInitialCap[0] = toupper(wordInitialCap[0]);
-        for (int i = 1; wordInitialCap[i]; i++) {
-            wordInitialCap[i] = tolower(wordInitialCap[i]);
+        for (int i = 0; wordLower[i]; i++) {
+            wordLower[i] = tolower(wordLower[i]);
         }
 
-        for (int i = 0; wordAllCaps[i]; i++) {
-            wordAllCaps[i] = toupper(wordAllCaps[i]);
+        for (int i = 0; wordUpper[i]; i++) {
+            wordUpper[i] = toupper(wordUpper[i]);
         }
 
-        // Final check for the last word
         if (!find(dictionary, dict_size, word) &&
-            !find(dictionary, dict_size, wordInitialCap) &&
-            !find(dictionary, dict_size, wordAllCaps)) {
+            !find(dictionary, dict_size, wordLower) &&
+            !find(dictionary, dict_size, wordUpper)) {
             printf("%s (%d,%d): %s\n", filename, line_number, start_column, word);
         }
     }
 
     close(fd);
 }
+
 
 // Function to process a directory
 void process_directory(char* dirname, char** dictionary, int dict_size) {
