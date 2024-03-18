@@ -2,7 +2,7 @@
 This spell checker is a command-line utility designed to verify the spelling of words in text files against a given dictionary. It supports processing individual files as well as all files within specified directories, including nested directories. The program prints the location (filename, line, and column) and the incorrect word for each spelling mistake found.
 
 # Features
-Checks the spelling of words in text files against a provided dictionary.
+- Checks the spelling of words in text files against a provided dictionary. <br>
 Processes single files or entire directories recursively.
 Displays the filename, line number, column number, and the misspelled word.
 Dependencies
