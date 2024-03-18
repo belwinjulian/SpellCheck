@@ -3,14 +3,16 @@ This spell checker is a command-line utility designed to verify the spelling of 
 
 # Features
 - Checks the spelling of words in text files against a provided dictionary. <br>
-Processes single files or entire directories recursively.
-Displays the filename, line number, column number, and the misspelled word.
-Dependencies
-GCC (GNU Compiler Collection) or any compatible C compiler
-Standard C libraries (stdio.h, stdlib.h, string.h, limits.h, dirent.h, sys/stat.h, fcntl.h, unistd.h, ctype.h)
-Compilation
-To compile the spell checker, use the following command in the terminal:
-gcc -o spellchecker spellchecker.c
+- Processes single files or entire directories recursively.  <br>
+- Displays the filename, line number, column number, and the misspelled word.  <br>
+
+# Dependencies
+- GCC (GNU Compiler Collection) or any compatible C compiler  <br>
+- Standard C libraries (stdio.h, stdlib.h, string.h, limits.h, dirent.h, sys/stat.h, fcntl.h, unistd.h, ctype.h)  <br>
+
+# Compilation
+ - To compile the spell checker, use the following command in the terminal:  <br>
+**gcc -o spellchecker spellchecker.c**
 
 # Usage
 After compiling the program, run it using the following syntax:
