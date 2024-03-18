@@ -15,17 +15,18 @@ This spell checker is a command-line utility designed to verify the spelling of 
 **gcc -o spellchecker spellchecker.c**
 
 # Usage
-After compiling the program, run it using the following syntax:
-./spellchecker <dictionary_path> <file_or_directory_path>...
-<dictionary_path>: Path to the text file containing the dictionary words, one per line.
-<file_or_directory_path>: Path to a text file or directory to check. Multiple paths can be specified.
-Program Structure
-cmp: Compares two strings, used by qsort and bsearch for sorting and searching in the dictionary.
-load_dictionary: Loads words from a dictionary file into memory. Words are expected to be separated by newlines or spaces.
-find: Checks if a given word exists in the dictionary using binary search.
-process_file: Processes a single file, checks each word against the dictionary, and prints out any words not found in the dictionary along with their location.
-process_directory: Recursively processes all files in a given directory and its subdirectories.
-main: Entry point of the program. Parses command-line arguments, loads the dictionary, and processes specified files or directories.
-Note
+After compiling the program, run it using the following syntax:  <br>
+**./spellchecker <dictionary_path> <file_or_directory_path>...**  <br>
+<dictionary_path>: Path to the text file containing the dictionary words, one per line.  <br>
+<file_or_directory_path>: Path to a text file or directory to check. Multiple paths can be specified.  <br>
 
-This program does not dynamically allocate memory for each word in the dictionary or the text files. It uses fixed-size buffers, which means extremely long words may not be processed correctly.
+# Program Structure
+cmp: Compares two strings, used by qsort and bsearch for sorting and searching in the dictionary.  <br>
+load_dictionary: Loads words from a dictionary file into memory. Words are expected to be separated by newlines or spaces.  <br>
+find: Checks if a given word exists in the dictionary using binary search.  <br>
+process_file: Processes a single file, checks each word against the dictionary, and prints out any words not found in the dictionary along with their location.  <br>
+process_directory: Recursively processes all files in a given directory and its subdirectories.  <br>
+main: Entry point of the program. Parses command-line arguments, loads the dictionary, and processes specified files or directories.  <br>
+
+# Note:
+This program does not dynamically allocate memory for each word in the dictionary or the text files. It uses fixed-size buffers, which means extremely long words may not be processed correctly. 
