@@ -96,20 +96,24 @@ void process_file(char* filename, char** dictionary, int dict_size) {
                 memset(word, 0, MAX_WORD_LENGTH); 
             }
 
-            if (!ispunct(buffer)) {
-                column_number++;
+            if (!ispunct(buffer)) { 
+                column_number++; // Increment for spaces but not punctuation 
             }
+            start_column = column_number; 
 
-            start_column = column_number;
         } else {
+            if (word_index == 0) { // Update start_column at the start of a word
+                start_column = column_number;
+            }
             if (word_index < MAX_WORD_LENGTH - 1) {
                 word[word_index++] = buffer;
             }
-        }
-        
-        if (!isspace(buffer) && !ispunct(buffer)) {
-            column_number++;
-        }
+
+            // Only increment column_number if we're not at the first character 
+            if (word_index > 0) { 
+                column_number++; 
+            } 
+        } 
     }
 
     // Handle last word in file, if any
