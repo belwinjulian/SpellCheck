@@ -16,7 +16,7 @@ This spell checker is a command-line utility designed to verify the spelling of 
 
 # Usage
 After compiling the program, run it using the following syntax:  <br>
-**./spellchecker <dictionary_path> <file_or_directory_path>...**  <br>
+**./spellchecker <dictionary_path> <file_or_directory_path>...**  <br> <br>
 <dictionary_path>: Path to the text file containing the dictionary words, one per line.  <br>
 <file_or_directory_path>: Path to a text file or directory to check. Multiple paths can be specified.  <br>
 
