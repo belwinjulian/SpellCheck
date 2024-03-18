@@ -81,71 +81,74 @@ void process_file(char* filename, char** dictionary, int dict_size) {
 
         if (isspace(buffer) || ispunct(buffer)) {
             if (word_index > 0) { 
-                word[word_index] = '\0';
-                
-                // Check if the word exactly as typed is in the dictionary
-                int exactMatch = find(dictionary, dict_size, word);
+                word[word_index] = '\0'; 
 
-                // If not an exact match, try other variations
-                if (!exactMatch) {
-                    char wordAllCaps[MAX_WORD_LENGTH];
-                    strcpy(wordAllCaps, word);
+                char wordLower[MAX_WORD_LENGTH];
+                char wordUpper[MAX_WORD_LENGTH];
+                strcpy(wordLower, word);
+                strcpy(wordUpper, word);
 
-                    // Convert word to all caps
-                    for (int i = 0; wordAllCaps[i]; i++) {
-                        wordAllCaps[i] = toupper(wordAllCaps[i]);
-                    }
-
-                    // If the word in all caps is found in the dictionary,
-                    // it suggests the dictionary has the word in lowercase or mixed case.
-                    if (find(dictionary, dict_size, wordAllCaps)) {
-                        // Check if the original word is lowercase
-                        int isOriginalLowercase = 1;
-                        for (int i = 0; i < word_index && isOriginalLowercase; i++) {
-                            if (!islower(word[i]) && word[i] != '-') { // Allow hyphens in lowercase words
-                                isOriginalLowercase = 0;
-                            }
-                        }
-
-                        if (!isOriginalLowercase) {
-                            printf("%s (%d,%d): %s\n", filename, line_number, start_column, word);
-                        }
-                    } else { // Word not found in any case
-                        printf("%s (%d,%d): %s\n", filename, line_number, start_column, word);
-                    }
+                // Convert word to lowercase for the comparison
+                for (int i = 0; wordLower[i]; i++) {
+                    wordLower[i] = tolower(wordLower[i]);
                 }
 
-                word_index = 0;
-                memset(word, 0, MAX_WORD_LENGTH);
+                // Convert word to uppercase for the comparison
+                for (int i = 0; wordUpper[i]; i++) {
+                    wordUpper[i] = toupper(wordUpper[i]);
+                }
+
+                // Original check remains, add checks for lowercase and uppercase versions
+                if (!find(dictionary, dict_size, word) &&
+                    !find(dictionary, dict_size, wordLower) &&
+                    !find(dictionary, dict_size, wordUpper)) {
+                    printf("%s (%d,%d): %s\n", filename, line_number, start_column, word);
+                }
+
+                word_index = 0; 
+                memset(word, 0, MAX_WORD_LENGTH); 
             }
 
             column_number++;
             start_column = column_number;
         } else {
-            if (word_index == 0) {
+            if (word_index == 0) { // Update start_column at the start of a word
                 start_column = column_number;
             }
             if (word_index < MAX_WORD_LENGTH - 1) {
                 word[word_index++] = buffer;
             }
             column_number++;
-        }
+        } 
     }
 
-    // Handle the last word
+    // Handle last word in file, if any
     if (word_index > 0) {
-        word[word_index] = '\0'; // Similar logic as above for the last word
+        word[word_index] = '\0'; 
 
-        int exactMatch = find(dictionary, dict_size, word);
-        if (!exactMatch) {
-            // Similar processing for the last word as done in the loop
-            // ...
+        // Replicate the capitalization logic for the last word
+        char wordLower[MAX_WORD_LENGTH];
+        char wordUpper[MAX_WORD_LENGTH];
+        strcpy(wordLower, word);
+        strcpy(wordUpper, word);
+
+        for (int i = 0; wordLower[i]; i++) {
+            wordLower[i] = tolower(wordLower[i]);
+        }
+
+        for (int i = 0; wordUpper[i]; i++) {
+            wordUpper[i] = toupper(wordUpper[i]);
+        }
+
+        if (!find(dictionary, dict_size, word) &&
+            !find(dictionary, dict_size, wordLower) &&
+            !find(dictionary, dict_size, wordUpper)) {
+            printf("%s (%d,%d): %s\n", filename, line_number, start_column, word);
         }
     }
 
     close(fd);
 }
-
 
 // Function to process a directory
 void process_directory(char* dirname, char** dictionary, int dict_size) {
