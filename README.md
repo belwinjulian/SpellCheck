@@ -24,11 +24,11 @@ After compiling the program, run it using the following syntax:  <br>
 ### cmp
 **Purpose**: The cmp function is designed for comparing two strings. It serves as a callback function for both qsort (Quick Sort) and bsearch (Binary Search) standard library functions. <br>
 **Operation**: It takes two const void* arguments, casts them to const char** (pointer to pointer to char), and uses strcmp to compare the strings they point to. It returns an integer less than, equal to, or greater than zero if the first string is found, respectively, to be less than, to match, or be greater than the second string. <br>
-**Significance**: This function is essential for sorting the dictionary in lexicographical order and efficiently searching for words within the sorted dictionary, thereby optimizing the spell-checking process. <br> <br>
+**Significance**: This function is essential for sorting the dictionary in lexicographical order and efficiently searching for words within the sorted dictionary, thereby optimizing the spell-checking process. <br>
 ### load_dictionary
 **Purpose**: load_dictionary is tasked with loading the words from a specified dictionary file into memory, preparing the spell checker to verify text against these loaded words. <br>
 **Operation**: It opens the provided dictionary file for reading and dynamically allocates memory for storing each word. It reads the file character by character, constructing words and storing them in an array of string pointers until either the file ends or the maximum number of words (MAX_WORDS) is reached. <br>
-**Significance**: Proper loading and storing of dictionary words are crucial for the spell-checking functionality. This function sets up the necessary data structure (a sorted array of words) that enables fast and efficient spell checking across the provided texts. <br> <br>
+**Significance**: Proper loading and storing of dictionary words are crucial for the spell-checking functionality. This function sets up the necessary data structure (a sorted array of words) that enables fast and efficient spell checking across the provided texts. <br>
 ### find
 **Purpose**: This function checks whether a given word exists in the loaded dictionary, employing a binary search algorithm for this purpose. <br>
 **Operation**: It takes the word to be searched, the dictionary array, and its size as arguments. By using binary search, it significantly reduces the search time compared to linear search, especially for large dictionaries. <br>
