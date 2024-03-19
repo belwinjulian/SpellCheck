@@ -96,7 +96,7 @@ void process_file(char* filename, char** dictionary, int dict_size) {
                 memset(word, 0, MAX_WORD_LENGTH); // Clear the word buffer
             }
             line_number++;
-            column_number = 0; // Reset to 0 because it's incremented at the end of the loop
+            column_number = 1; // Reset to 0 because it's incremented at the end of the loop
             continue;
         }
 
