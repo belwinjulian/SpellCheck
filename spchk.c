@@ -83,12 +83,25 @@ void process_file(char* filename, char** dictionary, int dict_size) {
             if (word_index > 0) { 
                 word[word_index] = '\0'; 
 
-                // Convert word to lowercase
-                for (int i = 0; i < word_index; i++) {
-                    word[i] = tolower(word[i]);
+                char wordLower[MAX_WORD_LENGTH];
+                char wordUpper[MAX_WORD_LENGTH];
+                strcpy(wordLower, word);
+                strcpy(wordUpper, word);
+
+                // Convert word to lowercase for the comparison
+                for (int i = 0; wordLower[i]; i++) {
+                    wordLower[i] = tolower(wordLower[i]);
                 }
 
-                if (!find(dictionary, dict_size, word)) {
+                // Convert word to uppercase for the comparison
+                for (int i = 0; wordUpper[i]; i++) {
+                    wordUpper[i] = toupper(wordUpper[i]);
+                }
+
+                // Original check remains, add checks for lowercase and uppercase versions
+                if (!find(dictionary, dict_size, word) &&
+                    !find(dictionary, dict_size, wordLower) &&
+                    !find(dictionary, dict_size, wordUpper)) {
                     printf("%s (%d,%d): %s\n", filename, line_number, start_column, word);
                 }
 
@@ -96,11 +109,8 @@ void process_file(char* filename, char** dictionary, int dict_size) {
                 memset(word, 0, MAX_WORD_LENGTH); 
             }
 
-            if (!ispunct(buffer)) { 
-                column_number++; // Increment for spaces but not punctuation 
-            }
-            start_column = column_number; 
-
+            column_number++;
+            start_column = column_number;
         } else {
             if (word_index == 0) { // Update start_column at the start of a word
                 start_column = column_number;
@@ -108,25 +118,37 @@ void process_file(char* filename, char** dictionary, int dict_size) {
             if (word_index < MAX_WORD_LENGTH - 1) {
                 word[word_index++] = buffer;
             }
-
-            // Only increment column_number if we're not at the first character 
-            if (word_index > 0) { 
-                column_number++; 
-            } 
+            column_number++;
         } 
     }
 
     // Handle last word in file, if any
     if (word_index > 0) {
         word[word_index] = '\0'; 
-        if (!find(dictionary, dict_size, word)) {
+
+        // Replicate the capitalization logic for the last word
+        char wordLower[MAX_WORD_LENGTH];
+        char wordUpper[MAX_WORD_LENGTH];
+        strcpy(wordLower, word);
+        strcpy(wordUpper, word);
+
+        for (int i = 0; wordLower[i]; i++) {
+            wordLower[i] = tolower(wordLower[i]);
+        }
+
+        for (int i = 0; wordUpper[i]; i++) {
+            wordUpper[i] = toupper(wordUpper[i]);
+        }
+
+        if (!find(dictionary, dict_size, word) &&
+            !find(dictionary, dict_size, wordLower) &&
+            !find(dictionary, dict_size, wordUpper)) {
             printf("%s (%d,%d): %s\n", filename, line_number, start_column, word);
         }
     }
 
     close(fd);
 }
-
 
 // Function to process a directory
 void process_directory(char* dirname, char** dictionary, int dict_size) {
