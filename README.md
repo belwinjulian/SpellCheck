@@ -1,3 +1,7 @@
+Belwin Julian (bj273)
+Soma Parvathini (svp98)
+
+
 # SpellCheck
 This command-line spell checker helps ensure the accuracy of your text files by cross-referencing them with a word dictionary. It can process single files or scan entire directories (including subdirectories). When it finds a misspelling, it reports the file, line number, column number, and the incorrect word.
 
