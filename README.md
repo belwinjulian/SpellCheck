@@ -1,6 +1,28 @@
 # SpellCheck
 This command-line spell checker helps ensure the accuracy of your text files by cross-referencing them with a word dictionary. It can process single files or scan entire directories (including subdirectories). When it finds a misspelling, it reports the file, line number, column number, and the incorrect word.
 
+
+#Test Cases
+
+Test Case 1: Basic Functionality
+
+Input: A simple text file with correctly spelled words and intentional misspellings.
+Expected Output: A list of potential misspellings with their line and column numbers.
+Test Case 2: "MacDonald" Variations
+
+Input: Text containing "MacDonald" in different cases (macdonald, MacDonald, MACDONALD).
+Expected Output: Only the lowercase "macdonald" should be reported as a potential misspelling.
+Test Case 3: Hyphens
+
+Input: Text with hyphenated words (e.g., "well-known", "self-explanatory").
+Expected Output: Hyphenated words should be treated as single words.
+Test Case 4: Leading Parentheses
+
+Input: Text with words starting with parentheses (e.g., "(This").
+Expected Output: Words with leading parentheses should be processed correctly.
+
+
+
 # Features
 - **Verifies spelling against a dictionary**: Ensures the accuracy of your text by comparing words against a provided word list. <br>
 - **Flexible processing**: Can handle individual files or recursively scan entire directory structures (including subdirectories) for comprehensive spell-checking.  <br>
