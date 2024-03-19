@@ -69,80 +69,86 @@ void process_file(char* filename, char** dictionary, int dict_size) {
     memset(word, 0, MAX_WORD_LENGTH);
 
     int line_number = 1;
-    int column_number = 1;
-    int start_column = 1;
+    int column_number = 1; // Start at 1 for the first character
+    int start_column = 1; // Correctly set for the start of the first word
 
     while (read(fd, &buffer, 1) > 0) {
         if (buffer == '\n') {
+            if (word_index > 0) { // Check if there's a word before the newline
+                word[word_index] = '\0'; // Null-terminate the word
+                // Directly check the original word against the dictionary
+                int found = find(dictionary, dict_size, word);
+
+                // If not found and the word is not already lowercase, check lowercase version
+                if (!found && word[0] != tolower(word[0])) {
+                    char wordLower[MAX_WORD_LENGTH];
+                    for (int i = 0; word[i]; i++) {
+                        wordLower[i] = tolower(word[i]);
+                    }
+                    wordLower[word_index] = '\0';
+                    found = find(dictionary, dict_size, wordLower);
+                }
+
+                if (!found) {
+                    printf("%s (%d,%d): %s\n", filename, line_number, start_column, word);
+                }
+                word_index = 0; // Reset word index for the next word
+                memset(word, 0, MAX_WORD_LENGTH); // Clear the word buffer
+            }
             line_number++;
-            column_number = 1;
+            column_number = 0; // Reset to 0 because it's incremented at the end of the loop
             continue;
         }
 
         if (isspace(buffer) || ispunct(buffer)) {
-            if (word_index > 0) { 
-                word[word_index] = '\0'; 
-
-                char wordLower[MAX_WORD_LENGTH];
-                char wordUpper[MAX_WORD_LENGTH];
-                strcpy(wordLower, word);
-                strcpy(wordUpper, word);
-
-                // Convert word to lowercase for the comparison
-                for (int i = 0; wordLower[i]; i++) {
-                    wordLower[i] = tolower(wordLower[i]);
+            if (word_index > 0) {
+                word[word_index] = '\0';
+                // Repeat the check logic for words followed by space or punctuation
+                int found = find(dictionary, dict_size, word);
+                if (!found && word[0] != tolower(word[0])) {
+                    char wordLower[MAX_WORD_LENGTH];
+                    for (int i = 0; word[i]; i++) {
+                        wordLower[i] = tolower(word[i]);
+                    }
+                    wordLower[word_index] = '\0';
+                    found = find(dictionary, dict_size, wordLower);
                 }
 
-                // Convert word to uppercase for the comparison
-                for (int i = 0; wordUpper[i]; i++) {
-                    wordUpper[i] = toupper(wordUpper[i]);
-                }
-
-                // Original check remains, add checks for lowercase and uppercase versions
-                if (!find(dictionary, dict_size, word) &&
-                    !find(dictionary, dict_size, wordLower) &&
-                    !find(dictionary, dict_size, wordUpper)) {
+                if (!found) {
                     printf("%s (%d,%d): %s\n", filename, line_number, start_column, word);
                 }
 
-                word_index = 0; 
-                memset(word, 0, MAX_WORD_LENGTH); 
+                word_index = 0;
+                memset(word, 0, MAX_WORD_LENGTH);
             }
 
             column_number++;
-            start_column = column_number;
+            if (buffer != '-') { // Adjust start_column correctly
+                start_column = column_number + 1; // Next character starts a new word
+            }
         } else {
-            if (word_index == 0) { // Update start_column at the start of a word
-                start_column = column_number;
+            if (word_index == 0) {
+                start_column = column_number; // Set at the start of a new word
             }
-            if (word_index < MAX_WORD_LENGTH - 1) {
-                word[word_index++] = buffer;
-            }
+            word[word_index++] = buffer;
             column_number++;
-        } 
+        }
     }
 
-    // Handle last word in file, if any
+    // Handle the last word in the file, repeating the check logic
     if (word_index > 0) {
-        word[word_index] = '\0'; 
-
-        // Replicate the capitalization logic for the last word
-        char wordLower[MAX_WORD_LENGTH];
-        char wordUpper[MAX_WORD_LENGTH];
-        strcpy(wordLower, word);
-        strcpy(wordUpper, word);
-
-        for (int i = 0; wordLower[i]; i++) {
-            wordLower[i] = tolower(wordLower[i]);
+        word[word_index] = '\0';
+        int found = find(dictionary, dict_size, word);
+        if (!found && word[0] != tolower(word[0])) {
+            char wordLower[MAX_WORD_LENGTH];
+            for (int i = 0; word[i]; i++) {
+                wordLower[i] = tolower(word[i]);
+            }
+            wordLower[word_index] = '\0';
+            found = find(dictionary, dict_size, wordLower);
         }
 
-        for (int i = 0; wordUpper[i]; i++) {
-            wordUpper[i] = toupper(wordUpper[i]);
-        }
-
-        if (!find(dictionary, dict_size, word) &&
-            !find(dictionary, dict_size, wordLower) &&
-            !find(dictionary, dict_size, wordUpper)) {
+        if (!found) {
             printf("%s (%d,%d): %s\n", filename, line_number, start_column, word);
         }
     }
