@@ -11,14 +11,17 @@
 #define MAX_WORD_LENGTH 100
 #define MAX_WORDS 150000
 
+char** dictionary;
+char** Udictionary;
+
 // Function to compare two strings for qsort and bsearch
 int cmp(const void* a, const void* b) {
     return strcmp(*(const char**)a, *(const char**)b);
 }
 
 // Modified load_dictionary function to use read
-char** load_dictionary(char* dict_path, int* dict_size) {
-    char** dictionary = malloc(MAX_WORDS * sizeof(char*));
+void load_dictionary(char* dict_path, int* dict_size) {
+    dictionary = malloc(MAX_WORDS * sizeof(char*));
     int fd = open(dict_path, O_RDONLY);
     if (fd == -1) {
         printf("Could not open dictionary file %s\n", dict_path);
@@ -48,8 +51,22 @@ char** load_dictionary(char* dict_path, int* dict_size) {
     }
 
     close(fd);
-    return dictionary;
 }
+
+void initializeUdictionary(int dict_size) {
+    Udictionary = malloc(MAX_WORDS * sizeof(char*)); // Allocate space for Udictionary
+
+    for (int i = 0; i < dict_size; ++i) {
+        int wordLen = strlen(dictionary[i]);
+        Udictionary[i] = malloc((wordLen + 1) * sizeof(char)); // Allocate space for each word
+
+        // Convert each character to uppercase and copy it to Udictionary
+        for (int j = 0; j <= wordLen; ++j) {
+            Udictionary[i][j] = toupper((unsigned char)dictionary[i][j]);
+        }
+    }
+}
+
 
 // Function to check if a word is in the dictionary using binary search
 int find(char** dictionary, int dict_size, char* word) {
@@ -79,6 +96,10 @@ void process_file(char* filename, char** dictionary, int dict_size) {
                 // Directly check the original word against the dictionary
                 int found = find(dictionary, dict_size, word);
 
+                if(!found) {
+                    found = find(Udictionary, dict_size, word);
+                }
+
                 // If not found and the word is not already lowercase, check lowercase version
                 if (!found && word[0] != tolower(word[0])) {
                     char wordLower[MAX_WORD_LENGTH];
@@ -88,6 +109,8 @@ void process_file(char* filename, char** dictionary, int dict_size) {
                     wordLower[word_index] = '\0';
                     found = find(dictionary, dict_size, wordLower);
                 }
+               
+
 
                 if (!found) {
                     printf("%s (%d,%d): %s\n", filename, line_number, start_column, word);
@@ -105,6 +128,11 @@ void process_file(char* filename, char** dictionary, int dict_size) {
                 word[word_index] = '\0';
                 // Repeat the check logic for words followed by space or punctuation
                 int found = find(dictionary, dict_size, word);
+
+                if(!found) {
+                    found = find(Udictionary, dict_size, word);
+                }
+
                 if (!found && word[0] != tolower(word[0])) {
                     char wordLower[MAX_WORD_LENGTH];
                     for (int i = 0; word[i]; i++) {
@@ -139,6 +167,11 @@ void process_file(char* filename, char** dictionary, int dict_size) {
     if (word_index > 0) {
         word[word_index] = '\0';
         int found = find(dictionary, dict_size, word);
+
+        if(!found) {
+                    found = find(Udictionary, dict_size, word);
+                }
+
         if (!found && word[0] != tolower(word[0])) {
             char wordLower[MAX_WORD_LENGTH];
             for (int i = 0; word[i]; i++) {
@@ -188,7 +221,11 @@ int main(int argc, char** argv) {
 
     // Load the dictionary
     int dict_size = 0;
-    char** dictionary = load_dictionary(argv[1], &dict_size);
+    load_dictionary(argv[1], &dict_size);
+    initializeUdictionary(dict_size);
+    qsort(Udictionary, dict_size, sizeof(char*), cmp);
+
+
 
     // Sort the dictionary for binary search
     qsort(dictionary, dict_size, sizeof(char*), cmp);
