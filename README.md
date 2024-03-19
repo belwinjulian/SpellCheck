@@ -12,7 +12,7 @@ This command-line spell checker helps ensure the accuracy of your text files by 
 
 # Compilation
  - To compile the spell checker, use the command as follows:  <br>
-**gcc -o spellchecker spellchecker.c**
+**gcc -o spellchecker spchk.c**
 
 # Usage
 After compiling the program, run it using the syntax as follow:  <br>
