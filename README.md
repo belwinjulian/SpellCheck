@@ -40,11 +40,15 @@ Launch in interactive mode by running without arguments, or in batch mode by spe
  - To compile the spell checker, use the command as follows:  <br>
 **gcc -o spellchecker spchk.c**
 
-# Usage
-After compiling the program, run it using the syntax as follow:  <br>
-**./spellchecker <dictionary_path> <file_or_directory_path>...**  <br> <br>
-<dictionary_path>:  Specifies the location of the text file containing your word list (one word per line). This file is the reference for correct spellings.  <br>
-<file_or_directory_path>: Indicates the text file or the directory you want to spell-check. The program can handle multiple paths for broader analysis.  <br>
+### Interactive Mode
+- $ ./mysh
+Welcome to my shell!
+mysh> [Enter command here]
+
+### Batch Mode
+- $ ./mysh [script file]
+or -
+$ cat [script file] | ./mysh
 
 # Program Structure
 ### cmp
