@@ -3,7 +3,7 @@ Soma Parvathini (svp98)
 
 
 # SpellCheck
-This command-line spell checker helps ensure the accuracy of your text files by cross-referencing them with a word dictionary. It can process single files or scan entire directories (including subdirectories). When it finds a misspelling, it reports the file, line number, column number, and the incorrect word.
+A simple command-line shell designed for the CS 214 course project, capable of interpreting and executing commands similarly to bash or zsh. This shell supports both interactive and batch modes to provide flexibility in process management and file operations.
 
 
 #Test Cases
@@ -28,10 +28,12 @@ Expected Output: Words with leading parentheses should be processed correctly.
 
 
 # Features
-- **Verifies spelling against a dictionary**: Ensures the accuracy of your text by comparing words against a provided word list. <br>
-- **Flexible processing**: Can handle individual files or recursively scan entire directory structures (including subdirectories) for comprehensive spell-checking.  <br>
-- **Detailed error reporting**: Pinpoints misspellings by providing the filename, line number, column number, and the incorrect word, simplifying the editing process.  <br>
-
+- **Interactive and Batch Modes**: Detects mode using `isatty()` and adjusts behavior for command input accordingly. <br>
+- **Command Execution**: Executes external programs, handles built-in commands (`cd`, `pwd`, `which`, `exit`), and processes wildcards for file names. <br>
+- **Redirection and Pipelines**: Implements `<` and `>` for I/O redirection and `|` for connecting two processes. <br>
+- **Wildcards**: Handles single asterisk patterns in file names for expansion. <br>
+- **Conditional Execution**: Allows for conditional command execution based on the success or failure of previous commands. <br>
+  
 # Dependencies
 - GCC (GNU Compiler Collection) or any other C compiler which is compatible  <br>
 - Standard C libraries, which include, stdio.h, stdlib.h, string.h, limits.h, dirent.h, sys/stat.h, fcntl.h, unistd.h, ctype.h  <br>
