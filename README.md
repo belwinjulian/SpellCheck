@@ -34,10 +34,8 @@ Expected Output: Words with leading parentheses should be processed correctly.
 - **Wildcards**: Handles single asterisk patterns in file names for expansion. <br>
 - **Conditional Execution**: Allows for conditional command execution based on the success or failure of previous commands. <br>
   
-# Dependencies
-- GCC (GNU Compiler Collection) or any other C compiler which is compatible  <br>
-- Standard C libraries, which include, stdio.h, stdlib.h, string.h, limits.h, dirent.h, sys/stat.h, fcntl.h, unistd.h, ctype.h  <br>
-
+## Usage
+Launch in interactive mode by running without arguments, or in batch mode by specifying a script file or piping input.
 # Compilation
  - To compile the spell checker, use the command as follows:  <br>
 **gcc -o spellchecker spchk.c**
